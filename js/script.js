@@ -1,35 +1,66 @@
 const todos = [];
-const RENDER_EVENT = "render-todo";
+const RENDER_EVENT = "todo-render";
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   const submitForm = document.getElementById("form");
-  submitForm.addEventListener("submit", e => (e.preventDefault(), addTodo()));
+  submitForm.addEventListener("submit", e => {
+    e.preventDefault();
+    addTodo();
+    document.dispatchEvent(new Event(RENDER_EVENT));
+  });
 });
+
+function generateId() {
+  return +new Date();
+}
 
 function addTodo() {
   const textTodo = document.getElementById("title").value;
   const dateTodo = document.getElementById("date").value;
 
   const id = generateId();
-  const todoObject = generateObject(id, textTodo, dateTodo, false);
-  todos.push(todoObject);
 
-  document.dispatchEvent(new Event(RENDER_EVENT));
+  const todo = generateObject(id, textTodo, dateTodo, false);
+  todos.push(todo);
 }
 
-function generateId() {
-  return +new Date();
-}
-
-function generateObject(id, text, date, isComplete) {
+function generateObject(id, title, date, isCompleted) {
   return {
     id: id,
-    text: text,
+    title: title,
     date: date,
-    isComplete: isComplete,
+    isCompleted: isCompleted,
   };
 }
 
-document.addEventListener(RENDER_EVENT, function () {
+function makeTodo(object) {
+  const text = document.createElement("h2");
+  text.innerText = object.title;
+
+  const date = document.createElement("p");
+  date.innerHTML = object.date;
+
+  const textContainer = document.createElement("div");
+  textContainer.classList.add("inner");
+  textContainer.append(text, date);
+
+  const container = document.createElement("div");
+  container.classList.add("shadow", "item");
+  container.append(textContainer);
+  container.setAttribute("id", `todo-${object.id}`);
+
+  return container;
+}
+
+document.addEventListener(RENDER_EVENT, () => {
   console.log(todos);
+  const uncompletedList = document.getElementById("todos");
+  uncompletedList.innerHTML = "";
+
+  for (const todoItem of todos) {
+    const todoElement = makeTodo(todoItem);
+    if (!todoItem.isCompleted) {
+      uncompletedList.append(todoElement);
+    }
+  }
 });
