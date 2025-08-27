@@ -55,12 +55,12 @@ function makeTodo(object) {
 document.addEventListener(RENDER_EVENT, () => {
   console.log(todos);
   const uncompletedList = document.getElementById("todos");
-  uncompletedList.innerHTML = "";
 
-  for (const todoItem of todos) {
-    const todoElement = makeTodo(todoItem);
-    if (!todoItem.isCompleted) {
-      uncompletedList.append(todoElement);
-    }
+  //todos sudah ada push dulu di fungsi addTodo
+  const newTodo = todos[todos.length - 1]; //karena index pada array
+  const todoElement = makeTodo(newTodo);
+
+  if (!newTodo.isCompleted) {
+    uncompletedList.append(todoElement);
   }
 });
